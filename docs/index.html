@@ -3,6 +3,7 @@
   <head>
     <title>AR Pattern Project</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/super-hands/dist/super-hands.min.js"></script>
 
 		<style>
         #drop-zone {
@@ -51,10 +52,14 @@
 						width="3" 
 						height="3" 
 						transparent="true"
-						material="shader: flat;">
+						material="shader: flat;"
+						grabbable>
 					</a-plane>
 
-					<a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+					<a-entity id="rig">
+						<a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+						<a-entity progressive-controls></a-entity>
+					</a-entity>
 					
 				</a-scene>
 
