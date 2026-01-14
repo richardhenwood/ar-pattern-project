@@ -1,45 +1,115 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Meta Quest 3 - SVG Floor Projection</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <title>AR Pattern Project</title>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+		<style>
+        #drop-zone {
+            width: 300px;
+            height: 150px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-family: sans-serif;
+            color: #666;
+            transition: background 0.3s;
+						z-index: -10;
+        }*/
+        #drop-zone.drag-over {
+            background: #f0f8ff;
+            border-color: #007bff;
+        }
+        #target-img {
+            max-width: 300px;
+            display: block;
+        }
+		</style>
+
   </head>
   <body style="margin: 0; overflow: hidden;">
     
-    <a-scene 
-      webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
-      xr-mode-ui="XRMode: ar;" 
-      ar-hit-test="target:#my-svg;"
-      background="color: #ECECEC">
-      
-      <a-assets>
-        <img id="my-svg" src="reference_lengths.svg">
-      </a-assets>
+				<a-scene 
+					id="ascene"
+					webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
+					xr-mode-ui="XRMode: ar;" 
+					ar-hit-test="target:#reference-svg;"
+					background="color: #ECECEC">
+					
+					<a-assets>
+						<img id="reference-svg" src="reference_lengths.svg">
+						<img id="pattern-svg" src="reference_lengths.svg">
+					</a-assets>
 
-      <a-plane 
-        id="projection-plane"
-        src="#my-svg" 
-        position="0 0 -1" 
-        rotation="-90 0 0" 
-        width="2" 
-        height="2" 
-        transparent="true"
-        material="shader: flat;">
-      </a-plane>
+					<a-plane 
+						id="projection-plane"
+						src="#reference-svg" 
+						position="0 0 -1" 
+						rotation="-90 0 0" 
+						width="3" 
+						height="3" 
+						transparent="true"
+						material="shader: flat;">
+					</a-plane>
 
-      <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
-      
-    </a-scene>
-    <!--script>
-      // Force background transparency on session start for Passthrough
-      const sceneEl = document.querySelector('a-scene');
-      sceneEl.addEventListener('enter-vr', () => {
-        if (sceneEl.is('ar-mode')) {
-          // This hides the skybox/background to reveal the real world
-          sceneEl.setAttribute('background', 'transparent', true);
-        }
-      });
-    </script-->
+					<a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+					
+				</a-scene>
+
+    	<div id="overlay"><div id='drop-zone'>Drop a new SVG pattern here</div></div>
+
+		<script>
+        const dropZone = document.getElementById('drop-zone');
+        const targetImg = document.getElementById('pattern-svg');
+
+        // 1. Prevent default behavior (Prevent file from opening in a new tab)
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        // 2. Add/Remove visual "drag-over" class
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+        });
+
+        // 3. Handle the drop
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            
+            if (files.length > 0) {
+                const file = files[0];
+
+                // Check if the file is actually an image
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+
+                    reader.onload = (event) => {
+                        // Update the src of the img element
+                        targetImg.src = event.target.result;
+        								const plane = document.getElementById('projection-plane');
+												plane.setAttribute('src', '#pattern-svg');
+        								const ascene = document.getElementById('ascene');
+												ascene.setAttribute('ar-hit-test', targetImg);
+                    };
+
+
+                    reader.readAsDataURL(file);
+                } else {
+                    alert("Please drop an image file.");
+                }
+            }
+        });
+    </script>
+
   </body>
 </html>
 
