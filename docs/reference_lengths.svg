@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="1030.2194mm"
+   width="1173.325mm"
+   viewBox="0 0 4434.6114 3893.7498"
+   version="1.2"
+   id="svg38"
+   sodipodi:docname="reference_lengths.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview38"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.13288677"
+     inkscape:cx="2329.0505"
+     inkscape:cy="1885.0635"
+     inkscape:window-width="1536"
+     inkscape:window-height="803"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg38" />
+  <title
+     id="title1">Pattern</title>
+  <desc
+     id="desc1">Generated with Qt</desc>
+  <defs
+     id="defs1" />
+  <metadata
+     id="metadata38">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Pattern</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <rect
+     style="fill:#ffffff;stroke:#ffffff;stroke-width:34.0158;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+     id="rect3"
+     width="1459.8925"
+     height="428.93747"
+     x="602.01172"
+     y="1241.661" />
+  <rect
+     style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:34.0158;stroke-dasharray:none;stroke-opacity:1"
+     id="rect3-7"
+     width="225.75671"
+     height="233.28177"
+     x="4048.1289"
+     y="748.88739" />
+  <rect
+     style="fill:none;stroke:#ffffff;stroke-width:34.01581453;stroke-opacity:1;stroke-dasharray:none"
+     id="rect1"
+     width="3779.5344"
+     height="3779.5344"
+     x="67.537842"
+     y="57.107826" />
+  <rect
+     style="fill:none;stroke:#ffffff;stroke-width:34.01581453;stroke-opacity:1;stroke-dasharray:none"
+     id="rect2"
+     width="377.95346"
+     height="377.95346"
+     x="3962.3101"
+     y="674.26691" />
+  <rect
+     style="fill:none;stroke:#000000;stroke-width:11.3386"
+     id="rect2-3"
+     width="377.95346"
+     height="377.95346"
+     x="3962.3101"
+     y="674.26691" />
+  <text
+     xml:space="preserve"
+     style="font-size:192px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:1"
+     x="1266.6056"
+     y="1532.4678"
+     id="text2"><tspan
+       sodipodi:role="line"
+       id="tspan2"
+       style="font-size:192px;stroke-width:1"
+       x="1266.6056"
+       y="1532.4678">1 M square</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:74.6668px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:1"
+     x="4152.0874"
+     y="832.62268"
+     id="text3"><tspan
+       sodipodi:role="line"
+       id="tspan3"
+       style="font-size:74.6668px;stroke-width:1"
+       x="4152.0874"
+       y="832.62268">10 cm</tspan><tspan
+       sodipodi:role="line"
+       style="font-size:74.6668px;stroke-width:1"
+       x="4152.0874"
+       y="935.98444"
+       id="tspan1"> sq</tspan></text>
+  <rect
+     style="fill:none;stroke:#000000;stroke-width:11.3386"
+     id="rect1-9"
+     width="3779.5344"
+     height="3779.5344"
+     x="67.537842"
+     y="57.107826" />
+</svg>
