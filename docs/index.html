@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Meta Quest 3 - SVG Floor Projection</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    
+    <a-scene 
+      webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
+      xr-mode-ui="XRMode: ar;" 
+      ar-hit-test="target:#my-svg;"
+      background="color: #ECECEC">
+      
+      <a-assets>
+        <img id="my-svg" src="male-shirt.svg">
+      </a-assets>
+
+      <a-plane 
+        id="projection-plane"
+        src="#my-svg" 
+        position="0 0 -1" 
+        rotation="-90 0 0" 
+        width="2" 
+        height="2" 
+        transparent="true"
+        material="shader: flat;">
+      </a-plane>
+
+      <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+      
+    </a-scene>
+    <!--script>
+      // Force background transparency on session start for Passthrough
+      const sceneEl = document.querySelector('a-scene');
+      sceneEl.addEventListener('enter-vr', () => {
+        if (sceneEl.is('ar-mode')) {
+          // This hides the skybox/background to reveal the real world
+          sceneEl.setAttribute('background', 'transparent', true);
+        }
+      });
+    </script-->
+  </body>
+</html>
+
