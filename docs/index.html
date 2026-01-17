@@ -15,14 +15,14 @@
         id="ascene"
         webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
         xr-mode-ui="XRMode: ar;" 
-        background="color: #ECECEC">
+        background="color: #ECECEC" >
           
         <a-assets>
             <img id="reference" src="reference_lengths.svg">
             <img id="mypattern" src="male_shirt.svg">
         </a-assets>
         
-        <a-plane svgplane id="svgplane" default="#reference"></a-plane>
+        <a-plane svgplane id="svgplane" default="#reference" grabbable></a-plane>
     </a-scene>
 
     <script>
