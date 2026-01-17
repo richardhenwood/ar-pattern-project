@@ -1,163 +1,130 @@
-<!DOCTYPE html>
 <html>
   <head>
     <title>AR Pattern Project</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-    <script>delete AFRAME.components["grabbable"];</script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.x/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/super-hands@^3.0.6/dist/super-hands.min.js"></script>
-
-		<style>
-        #drop-zone {
-            width: 300px;
-            height: 150px;
-            border: 2px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-family: sans-serif;
-            color: #666;
-            transition: background 0.3s;
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
         }
-        #drop-zone:xr-overlay {
-            display: block;
-            padding: 20px;
-        }
-        #drop-zone.drag-over {
-            background: #f0f8ff;
-            border-color: #007bff;
-        }
-        #target-img {
-            max-width: 300px;
-            display: block;
-        }
-		</style>
-
+    </style>
   </head>
-  <body style="margin: 0; overflow: hidden;">
-    
-				<a-scene 
-					id="ascene"
-					webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
-					xr-mode-ui="XRMode: ar;" 
-					ar-hit-test="target:#reference-svg;"
-					background="color: #ECECEC">
-					
-					<a-assets>
-						<img id="reference-svg" src="reference_lengths.svg">
-						<img id="pattern-svg" src="reference_lengths.svg">
-					</a-assets>
+  <body>
 
-					<a-entity id="rig">
-						<a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
-						<a-entity progressive-controls></a-entity>
-					</a-entity>
+    <a-scene
+        id="ascene"
+        webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
+        xr-mode-ui="XRMode: ar;" 
+        background="color: #ECECEC">
+          
+        <a-assets>
+            <img id="reference" src="reference_lengths.svg">
+            <img id="mypattern" src="male_shirt.svg">
+        </a-assets>
+        
+        <a-plane svgplane id="svgplane" default="#reference"></a-plane>
+    </a-scene>
 
-				</a-scene>
-
-    	<div id="overlay">
-            <div id='drop-zone'>Drop a new SVG pattern here or click to browse
-                <input type="file" id="file-input" multiple accept="image/*" hidden />
-            </div>
-            <div id='url-zone'>.. or provide a URL to your SVG
-                <input type="text" id="url-input" placeholder="Enter file URL here" />
-                <button id="submit-url">Submit URL</button>
-            </div>
-        </div>
-
-		<script>
-            function set_plane(svgElementId) {
-                const px2m = 0.0002645833;
-                const scene = document.querySelector('a-scene');
-                const svgElement = document.getElementById(svgElementId);
-
-                if (scene && svgElement) {
-                    let plane = document.getElementById('projection-plane');
-                    if (!plane) {
-                        plane = document.createElement('a-plane');
-                        plane.setAttribute('id', 'projection-plane');
-                        plane.setAttribute('position', '0 0 -1');
-                        plane.setAttribute('rotation', '-90 0 0');
-                        plane.setAttribute('transparent', 'true');
-                        plane.setAttribute('material', 'shader: flat;');
-                        plane.setAttribute('grabbable', '');
-                        scene.appendChild(plane);
-                    }
-
-                    plane.setAttribute('src', svgElement.src);
-                    plane.setAttribute('width', svgElement.width * px2m);
-                    plane.setAttribute('height', svgElement.height * px2m);
-
-                    scene.setAttribute('ar-hit-test', 'target: #' + svgElement.id);
+    <script>
+        AFRAME.registerComponent('svgplane', {
+            schema: {
+                svgfile: {type: 'string'},
+                width: {type: 'number', default: 1},
+                height: {type: 'number', default: 1},
+                px2m: {type: 'number', default: 0.0002645833} // convert pixel to meters
+            },
+            init: function () { },
+            update: function () {
+                console.log('updating')
+                svgfile = this.el.getAttribute('default')
+                if (this.data.svgfile) { // we have a new svgfile, so make a new asset
+                    svgfile = this.data.svgfile
                 }
+                this.el.setAttribute('material', {
+                    shader: 'flat',
+                    transparent: true,
+                    src: svgfile
+                });
+                this.el.setAttribute('position', '0 0 -1');
+                this.el.setAttribute('rotation', '-90 0 0');
+                const svgdom = document.querySelector(svgfile);
+                getSvgDimensions(svgdom.src).then(({width, height}) => {
+                    this.el.setAttribute('width', width);
+                    this.el.setAttribute('height', height);
+                });
+            }
+        });
+
+        async function getSvgDimensions(svgUrl) {
+            try {
+                const response = await fetch(svgUrl);
+                const svgString = await response.text();
+
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+
+                // Try to get width from 'width' attribute
+                let width = svgElement.getAttribute('width');
+                let height = svgElement.getAttribute('height');
+
+                // If width attribute is missing, check viewBox
+                if (!width) {
+                    const viewBox = svgElement.getAttribute('viewBox');
+                    if (viewBox) {
+                        const parts = viewBox.split(' ');
+                        // The third value in the viewBox is the width
+                        width = parts[2];
+                    }
+                }
+
+                console.log('Parsed SVG width, height:', width, height);
+                if (checkLastTwo(width, 'mm') && checkLastTwo(height, 'mm')){
+                    width = parseFloat(width.slice(0, -2)) / 1000;
+                    height = parseFloat(height.slice(0, -2)) / 1000;
+
+                    return {width: width, height: height};
+                }
+                alert("svg file does not have mm measurements in width or height")
+
+            } catch (error) {
+                console.error('Error fetching or parsing SVG:', error);
+                return null;
             }
 
-            document.addEventListener('DOMContentLoaded', () => {
-                set_plane('reference-svg');
-
-                const dropZone = document.getElementById('drop-zone');
-                const fileInput = document.getElementById('file-input');
-                const urlInput = document.getElementById('url-input');
-                const submitUrlBtn = document.getElementById('submit-url');
-                const targetImg = document.getElementById('pattern-svg');
-
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }, false);
-                });
-
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
-                });
-
-                ['dragleave', 'drop'].forEach(eventName => {
-                    dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
-                });
-
-                dropZone.addEventListener('drop', handleDrop, false);
-                
-                fileInput.addEventListener('change', (e) => {
-                    handleFiles(e.target.files);
-                });
-
-                submitUrlBtn.addEventListener('click', () => {
-                    const url = urlInput.value.trim();
-                    if (url) {
-                        processUrl(url);
-                        urlInput.value = '';
-                    }
-                });
-
-                function handleDrop(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    handleFiles(files);
+            function checkLastTwo(str, expected) {
+                // Check if the string has at least two characters before slicing
+                if (str.length >= 2) {
+                    return str.slice(-2) === expected;
                 }
+                return false; // Return false for strings shorter than 2 characters
+            }
+        }
+    </script>
 
-                function handleFiles(files) {
-                    if (files.length > 0) {
-                        const file = files[0];
-                        if (file.type.startsWith('image/')) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                                targetImg.src = event.target.result;
-                                set_plane('pattern-svg');
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            alert("Please drop an image file.");
-                        }
-                    }
-                }
+    <div id="overlay">
+        <div id='url-zone'>Provide a URL to your SVG
+            <input type="text" id="url-input" placeholder="Enter file URL here" />
+            <button id="submit-url">Submit URL</button>
+        </div>
+    </div>
 
-                function processUrl(url) {
-                    targetImg.src = url;
-                    set_plane('pattern-svg');
-                }
-            });
+    <script>
+        const urlInput = document.getElementById('url-input');
+        const submitUrlBtn = document.getElementById('submit-url');
+
+        submitUrlBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (url) {
+                const assets = document.querySelector('a-assets');
+                const asset = document.createElement('img');
+                asset.setAttribute('id', 'newpattern');
+                asset.setAttribute('src', url);
+                assets.appendChild(asset);
+                const entity = document.querySelector('#svgplane');
+                entity.setAttribute('svgplane', {svgfile: "#newpattern"});
+            }
+        });
     </script>
 
   </body>
