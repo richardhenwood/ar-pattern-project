@@ -96,9 +96,9 @@
             },
             logThumbstick: function (evt) {
                 const svgplane = document.querySelector('#svgplane');
-                let currentRotation = this.el.getAttribute('rotation');
+                let currentRotation = svgplane.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
-                this.el.setAttribute('rotation', {
+                svgplane.setAttribute('rotation', {
                     x: currentRotation.x += 10,
                     y: currentRotation.y + yaw * (timeDelta / 1000) * 50, // Adjust sensitivity
                     z: currentRotation.z
