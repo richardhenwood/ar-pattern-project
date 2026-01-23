@@ -23,20 +23,13 @@
         background="color: #ECECEC"
         physics="debug: true" 
         obb-collider="showColliders: true">
-          
-        <a-entity>
-            <a-camera></a-camera>
-            <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: left" raycaster="objects: .clickable"></a-entity>
-            <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: right" raycaster="objects: .clickable"></a-entity>
-        </a-entity>
 
         <!--a-entity id="leftHand" hand-tracking-grab-controls="hand: left;"></a-entity>
         <a-entity id="rightHand" hand-tracking-grab-controls="hand: right;"></a-entity-->
 
-        <a-box grabbable positioncontroller
-            position="0 1 -0.5"
-            width="0.5"
-            height="0.5"></a-box>
+        <a-entity meta-touch-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity meta-touch-controls="hand: right" thumbstick-logging></a-entity>
+
 
         <a-assets>
             <img id="reference" src="reference_lengths.svg">
@@ -97,7 +90,27 @@
             }
         });
 
-        AFRAME.registerComponent('positioncontroller', {
+        AFRAME.registerComponent('thumbstick-logging', {
+            init: function () {
+                this.el.addEventListener('thumbstickmoved', this.logThumbstick);
+            },
+            logThumbstick: function (evt) {
+                const svgplane = document.querySelector('#svgplane');
+                let currentRotation = this.el.getAttribute('rotation');
+                // Rotate the plane on its Y-axis (yaw)
+                this.el.setAttribute('rotation', {
+                    x: currentRotation.x += 10,
+                    y: currentRotation.y + yaw * (timeDelta / 1000) * 50, // Adjust sensitivity
+                    z: currentRotation.z
+                });
+                if (evt.detail.y > 0.95) { console.log("DOWN"); svgplane.setAttribute('rotation', '-90 0 0'); }
+                if (evt.detail.y < -0.95) { console.log("UP"); }
+                if (evt.detail.x < -0.95) { console.log("LEFT"); }
+                if (evt.detail.x > 0.95) { console.log("RIGHT"); }
+            }
+        });
+
+        /*AFRAME.registerComponent('positioncontroller', {
             init: function () {
                 const el = this.el; // Reference to the entity the component is attached to
                 el.setAttribute('material', 'color', 'green'); // Example: Change color when grabbed
@@ -126,8 +139,7 @@
                     }
                 });
             }
-        });
-
+        });*/
 
         /*AFRAME.registerComponent('planerotator', {
             init: function () {
