@@ -96,6 +96,7 @@
             },
             logThumbstick: function (evt) {
                 const svgplane = document.querySelector('#svgplane');
+                svgplane.setAttribute('material', 'color', 'green'); // Example: Change color when grabbed
                 let currentRotation = svgplane.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
                 svgplane.setAttribute('rotation', {
