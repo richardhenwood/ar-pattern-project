@@ -98,10 +98,7 @@
                 this.el.addEventListener('thumbstickmoved', this.logThumbstick);
             },
             logThumbstick: function (evt) {
-                const debugbox = document.querySelector('#debugbox');
-                debugbox.setAttribute('material', 'color', 'blue'); // Example: Change color when grabbed
-                const svgplane = document.querySelector('#svgplane');
-                svgplane.setAttribute('material', 'color', 'green'); // Example: Change color when grabbed
+                const debugbox = document.querySelector('#svgplane');
                 let currentRotation = svgplane.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
                 svgplane.setAttribute('rotation', {
@@ -109,7 +106,10 @@
                     y: currentRotation.y + yaw * (timeDelta / 1000) * 50, // Adjust sensitivity
                     z: currentRotation.z
                 });
-                if (evt.detail.y > 0.95) { console.log("DOWN"); svgplane.setAttribute('rotation', '-90 0 0'); }
+                if (evt.detail.y > 0.95) { console.log("DOWN"); 
+                    const debugbox = document.querySelector('#debugbox');
+                    debugbox.setAttribute('material', 'color', 'blue'); // Example: Change color when grabbed
+                    svgplane.setAttribute('rotation', '-90 -90 45'); }
                 if (evt.detail.y < -0.95) { console.log("UP"); }
                 if (evt.detail.x < -0.95) { console.log("LEFT"); }
                 if (evt.detail.x > 0.95) { console.log("RIGHT"); }
