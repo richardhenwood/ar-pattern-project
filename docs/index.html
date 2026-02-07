@@ -46,7 +46,7 @@
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
-        <a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="tomato">
+        <a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="green">
         </a-box>
 
         <a-camera>
@@ -98,7 +98,7 @@
                 this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
             },
             onThumbStickMoved: function (evt) {
-                const debugbox = document.querySelector('#svgplane');
+                const debugbox = document.querySelector('#debugbox');
                 let currentRotation = debugbox.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
                 svgplane.setAttribute('rotation', {
