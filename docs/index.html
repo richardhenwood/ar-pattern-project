@@ -47,8 +47,8 @@
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
-        <a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="green">
-        </a-box>
+        <!--a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="green">
+        </a-box-->
 
         <a-camera>
             <a-cursor raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-cursor>
@@ -99,7 +99,7 @@
                 this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
             },
             onThumbStickMoved: function (evt) {
-                const fudge = 3.0;
+                const fudge = 0.1;
                 const x = evt.detail.x;
                 const y = evt.detail.y;
                 if (Math.abs(x) > 0.20 && Math.abs(y) > 0.20) { 
@@ -121,7 +121,7 @@
             onThumbStickMoved: function (evt) {
                 const xfudge = 3.0;
                 const x = evt.detail.x;
-                if (Math.abs(x) > 0.20) { 
+                if (Math.abs(x) > 0.1) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('rotation');
                     svgplane.setAttribute('rotation', {
