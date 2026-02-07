@@ -24,19 +24,13 @@
         physics="debug: true" 
         obb-collider="showColliders: true">
 
-        <!--a-entity id="leftHand" hand-tracking-grab-controls="hand: left;"></a-entity>
-        <a-entity id="rightHand" hand-tracking-grab-controls="hand: right;"></a-entity-->
-
         <a-entity meta-touch-controls="hand: left" left-thumbstick-logging></a-entity>
         <a-entity meta-touch-controls="hand: right" right-thumbstick-logging></a-entity>
-
 
         <a-assets>
             <img id="reference" src="reference_lengths.svg">
             <img id="mypattern" src="male_shirt.svg">
         </a-assets>
-
-        <!--cursor intersection-spawn="event: click; mixin: voxel" raycaster="objects: .grabbable"></a-cursor-->
         
         <a-plane svgplane id="svgplane" 
                 default="#reference" 
@@ -47,22 +41,10 @@
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
-        <!--a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="green">
-        </a-box-->
-
         <a-camera>
             <a-cursor raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-cursor>
         </a-camera>
         
-        <!-- Button in 3D space -->
-        <!--a-plane class="clickable" position="0 1 -2" rotation="0 0 0" width="1" height="0.5" color="blue"
-            id="rotatebutton">
-            <a-text value="Click Me" align="center"></a-text>
-        </a-plane-->
-
-        <!--a-plane planerotator id="planerotator" position="0 1 -2" rotation="0 0 0" width="2" height="2" color="blue">
-            <a-text value="Click Me" align="center"></a-text>
-        </a-plane-->
     </a-scene>
 
     <script>
@@ -79,13 +61,6 @@
                 if (this.data.svgfile) { // we have a new svgfile, so make a new asset
                     svgfile = this.data.svgfile
                 }
-                /*this.el.setAttribute('material', {
-                    shader: 'flat',
-                    transparent: true,
-                    src: svgfile
-                });*/
-                //this.el.setAttribute('position', '0 0 -1');
-                //this.el.setAttribute('rotation', '-90 0 0');
                 const svgdom = document.querySelector(svgfile);
                 getSvgDimensions(svgdom.src).then(({width, height}) => {
                     this.el.setAttribute('width', width);
@@ -132,64 +107,6 @@
                 }
             }
         });
-
-        /*AFRAME.registerComponent('positioncontroller', {
-            init: function () {
-                const el = this.el; // Reference to the entity the component is attached to
-                el.setAttribute('material', 'color', 'green'); // Example: Change color when grabbed
-
-                // Listen for the specific grab-start/grab-end events
-                el.addEventListener('grab-start', function (evt) {
-                    console.log('Entity grabbed!', evt.detail.hand); // evt.detail.hand is the controller/super-hands entity
-                    el.setAttribute('material', 'color', 'purple'); // Example: Change color when grabbed
-                });
-
-                el.addEventListener('grab-end', function (evt) {
-                    console.log('Entity released!', evt.detail.hand);
-                    el.setAttribute('material', 'color', 'red'); // Example: Change color back when released
-                });
-
-                // Or listen for state changes (more robust for custom logic)
-                el.addEventListener('stateadded', function (evt) {
-                    if (evt.detail === 'grabbed') {
-                        console.log('Grab state added!');
-                    }
-                });
-
-                el.addEventListener('stateremoved', function (evt) {
-                    if (evt.detail === 'grabbed') {
-                        console.log('Grab state removed!');
-                    }
-                });
-            }
-        });*/
-
-        /*AFRAME.registerComponent('planerotator', {
-            init: function () {
-                this.el.setAttribute('tracked-controls', 'controller: right'); // Bind to right controller
-            },
-            tick: function (time, timeDelta) {
-                let controller = this.el.components['tracked-controls'].controller;
-                if (controller && controller.axes.length > 0) {
-                    let yaw = controller.axes[2]; // Example: right thumbstick X-axis
-                    let currentRotation = this.el.getAttribute('rotation');
-                    // Rotate the plane on its Y-axis (yaw)
-                    this.el.setAttribute('rotation', {
-                        x: currentRotation.x,
-                        y: currentRotation.y + yaw * (timeDelta / 1000) * 50, // Adjust sensitivity
-                        z: currentRotation.z
-                    });
-                }
-            }
-        });*/
-
-        /*document.querySelector('#rotatebutton').addEventListener('click', function (evt) {
-            const svgplane = document.querySelector('#svgplane');
-            var rotation = svgplane.getAttribute('rotation');
-            // Increment rotation on the Y-axis (degrees)
-            svgplane.setAttribute('rotation', { x: rotation.x, y: rotation.y + 21, z: rotation.z });
-
-        });*/
 
         async function getSvgDimensions(svgUrl) {
             try {
