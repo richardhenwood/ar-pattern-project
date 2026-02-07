@@ -98,14 +98,26 @@
                 this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
             },
             onThumbStickMoved: function (evt) {
-                let debugbox = document.querySelector('#debugbox');
+                const fudge = 3.0;
+                const x = evt.detail.x;
+                if (Math.abs(x) > 0.95) { 
+                    let svgplane = document.querySelector('#svgplane');
+                    let currentRotation = svgplane.getAttribute('rotation');
+                    svgplane.setAttribute('rotation', {
+                        x: currentRotation.x += x * fudge,
+                        y: currentRotation.y,
+                        z: currentRotation.z
+                    });
+                }
+                /*let debugbox = document.querySelector('#debugbox');
                 let currentRotation = debugbox.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
                 debugbox.setAttribute('rotation', {
                     x: currentRotation.x += 11,
                     y: currentRotation.y += 53, // Adjust sensitivity
                     z: currentRotation.z += 35
-                });
+                });*/
+
                 /*if (evt.detail.y > 0.95) { console.log("DOWN"); 
                     const debugbox = document.querySelector('#debugbox');
                     debugbox.setAttribute('material', 'color', 'blue'); // Example: Change color when grabbed
