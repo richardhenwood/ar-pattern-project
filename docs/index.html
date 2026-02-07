@@ -99,7 +99,7 @@
             },
             onThumbStickMoved: function (evt) {
                 const debugbox = document.querySelector('#svgplane');
-                let currentRotation = svgplane.getAttribute('rotation');
+                let currentRotation = debugbox.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
                 svgplane.setAttribute('rotation', {
                     x: currentRotation.x += 10,
