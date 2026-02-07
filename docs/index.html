@@ -27,8 +27,8 @@
         <!--a-entity id="leftHand" hand-tracking-grab-controls="hand: left;"></a-entity>
         <a-entity id="rightHand" hand-tracking-grab-controls="hand: right;"></a-entity-->
 
-        <a-entity meta-touch-controls="hand: left" thumbstick-logging></a-entity>
-        <a-entity meta-touch-controls="hand: right" thumbstick-logging></a-entity>
+        <a-entity meta-touch-controls="hand: left" left-thumbstick-logging></a-entity>
+        <a-entity meta-touch-controls="hand: right" right-thumbstick-logging></a-entity>
 
 
         <a-assets>
@@ -43,6 +43,7 @@
                 src="#reference" 
                 class='grabbable' 
                 rotation="-90 0 0"
+                position="0 0 -1'"
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
@@ -83,7 +84,7 @@
                     transparent: true,
                     src: svgfile
                 });*/
-                this.el.setAttribute('position', '0 0 -1');
+                //this.el.setAttribute('position', '0 0 -1');
                 //this.el.setAttribute('rotation', '-90 0 0');
                 const svgdom = document.querySelector(svgfile);
                 getSvgDimensions(svgdom.src).then(({width, height}) => {
@@ -93,38 +94,42 @@
             }
         });
 
-        AFRAME.registerComponent('thumbstick-logging', {
+        AFRAME.registerComponent('left-thumbstick-logging', {
             init: function () {
                 this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
             },
             onThumbStickMoved: function (evt) {
                 const fudge = 3.0;
                 const x = evt.detail.x;
-                if (Math.abs(x) > 0.80) { 
+                const y = evt.detail.y;
+                if (Math.abs(x) > 0.20 && Math.abs(y) > 0.20) { 
+                    let svgplane = document.querySelector('#svgplane');
+                    let currentRotation = svgplane.getAttribute('position');
+                    svgplane.setAttribute('position', {
+                        x: currentRotation.x += x * fudge,
+                        y: currentRotation.y += y * fudge,
+                        z: currentRotation.z
+                    });
+                }
+            }
+        });
+
+        AFRAME.registerComponent('right-thumbstick-logging', {
+            init: function () {
+                this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
+            },
+            onThumbStickMoved: function (evt) {
+                const xfudge = 3.0;
+                const x = evt.detail.x;
+                if (Math.abs(x) > 0.20) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('rotation');
                     svgplane.setAttribute('rotation', {
                         x: currentRotation.x,
-                        y: currentRotation.y += x * fudge,
+                        y: currentRotation.y += x * xfudge,
                         z: currentRotation.z
                     });
                 }
-                /*let debugbox = document.querySelector('#debugbox');
-                let currentRotation = debugbox.getAttribute('rotation');
-                // Rotate the plane on its Y-axis (yaw)
-                debugbox.setAttribute('rotation', {
-                    x: currentRotation.x += 11,
-                    y: currentRotation.y += 53, // Adjust sensitivity
-                    z: currentRotation.z += 35
-                });*/
-
-                /*if (evt.detail.y > 0.95) { console.log("DOWN"); 
-                    const debugbox = document.querySelector('#debugbox');
-                    debugbox.setAttribute('material', 'color', 'blue'); // Example: Change color when grabbed
-                    svgplane.setAttribute('rotation', '-90 -90 45'); }
-                if (evt.detail.y < -0.95) { console.log("UP"); }
-                if (evt.detail.x < -0.95) { console.log("LEFT"); }
-                if (evt.detail.x > 0.95) { console.log("RIGHT"); }*/
             }
         });
 
