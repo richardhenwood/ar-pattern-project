@@ -99,7 +99,7 @@
                 this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
             },
             onThumbStickMoved: function (evt) {
-                const fudge = 0.1;
+                const fudge = 0.03;
                 const x = evt.detail.x;
                 const y = evt.detail.y;
                 if (Math.abs(x) > 0.20 && Math.abs(y) > 0.20) { 
@@ -107,8 +107,8 @@
                     let currentRotation = svgplane.getAttribute('position');
                     svgplane.setAttribute('position', {
                         x: currentRotation.x += x * fudge,
-                        y: currentRotation.y += y * fudge,
-                        z: currentRotation.z
+                        y: currentRotation.y,
+                        z: currentRotation.z += y * fudge
                     });
                 }
             }
