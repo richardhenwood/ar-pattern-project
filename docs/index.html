@@ -46,7 +46,7 @@
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
-        <a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="orange">
+        <a-box id='debugbox' position="0 1 -5" rotation="0 45 0" width="0.5" height="0.5" depth="2" color="green">
         </a-box>
 
         <a-camera>
@@ -98,13 +98,13 @@
                 this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
             },
             onThumbStickMoved: function (evt) {
-                const debugbox = document.querySelector('#debugbox');
+                let debugbox = document.querySelector('#debugbox');
                 let currentRotation = debugbox.getAttribute('rotation');
                 // Rotate the plane on its Y-axis (yaw)
                 debugbox.setAttribute('rotation', {
-                    x: currentRotation.x += 10,
-                    y: currentRotation.y + yaw * (timeDelta / 1000) * 50, // Adjust sensitivity
-                    z: currentRotation.z
+                    x: currentRotation.x += 11,
+                    y: currentRotation.y += 53, // Adjust sensitivity
+                    z: currentRotation.z += 35
                 });
                 /*if (evt.detail.y > 0.95) { console.log("DOWN"); 
                     const debugbox = document.querySelector('#debugbox');
