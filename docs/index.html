@@ -102,7 +102,7 @@
                 const fudge = 0.03;
                 const x = evt.detail.x;
                 const y = evt.detail.y;
-                if (Math.abs(x) > 0.20 && Math.abs(y) > 0.20) { 
+                if (Math.abs(x) > 0.20 || Math.abs(y) > 0.20) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('position');
                     svgplane.setAttribute('position', {
