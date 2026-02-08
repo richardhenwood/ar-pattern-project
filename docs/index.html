@@ -95,13 +95,24 @@
             },
             onThumbStickMoved: function (evt) {
                 const xfudge = 3.0;
+                const yfudge = 0.03;
                 const x = evt.detail.x;
+                const y = evt.detail.y;
                 if (Math.abs(x) > 0.1) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('rotation');
                     svgplane.setAttribute('rotation', {
                         x: currentRotation.x,
                         y: currentRotation.y += x * xfudge,
+                        z: currentRotation.z
+                    });
+                }
+                if (Math.abs(y) > 0.20) { 
+                    let svgplane = document.querySelector('#svgplane');
+                    let currentRotation = svgplane.getAttribute('position');
+                    svgplane.setAttribute('position', {
+                        x: currentRotation.x,
+                        y: currentRotation.y += y * yfudge,
                         z: currentRotation.z
                     });
                 }
