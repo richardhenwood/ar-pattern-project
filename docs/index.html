@@ -29,7 +29,7 @@
 
         <a-assets>
             <img id="reference" src="reference_lengths.svg">
-            <img id="mypattern" src="male_shirt.svg">
+            <img id="patternplane">
         </a-assets>
         
         <a-plane svgplane id="svgplane" 
@@ -60,6 +60,7 @@
                 svgfile = this.el.getAttribute('default')
                 if (this.data.svgfile) { // we have a new svgfile, so make a new asset
                     svgfile = this.data.svgfile
+                    this.el.setAttribute('src', svgfile);
                 }
                 const svgdom = document.querySelector(svgfile);
                 getSvgDimensions(svgdom.src).then(({width, height}) => {
@@ -185,12 +186,11 @@
             const url = urlInput.value.trim();
             if (url) {
                 const assets = document.querySelector('a-assets');
-                const asset = document.createElement('img');
-                asset.setAttribute('id', 'newpattern');
+                const asset = document.querySelector('#patternplane');
                 asset.setAttribute('src', url);
-                assets.appendChild(asset);
                 const entity = document.querySelector('#svgplane');
-                entity.setAttribute('svgplane', {svgfile: "#newpattern"});
+                entity.setAttribute('svgplane', {svgfile: "#patternplane"});
+                console.log("set new svg");
             }
         });
     </script>
