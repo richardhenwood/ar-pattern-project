@@ -98,16 +98,16 @@
                 const yfudge = 0.01;
                 const x = evt.detail.x;
                 const y = evt.detail.y;
-                if (Math.abs(x) > 0.1) { 
+                if (Math.abs(x) > 0.2) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('rotation');
                     svgplane.setAttribute('rotation', {
                         x: currentRotation.x,
-                        y: currentRotation.y += x * xfudge,
+                        y: currentRotation.y -= x * xfudge,
                         z: currentRotation.z
                     });
                 }
-                if (Math.abs(y) > 0.20) { 
+                else (Math.abs(y) > 0.20) { 
                     if (Math.abs(y) > 0.80) { 
                         // accelerate extreme movemet
                         yfudge *= 3.0;
