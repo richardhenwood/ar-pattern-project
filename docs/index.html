@@ -107,7 +107,7 @@
                         z: currentRotation.z
                     });
                 }
-                else (Math.abs(y) > 0.20) { 
+                else if (Math.abs(y) > 0.20) { 
                     if (Math.abs(y) > 0.80) { 
                         // accelerate extreme movemet
                         yfudge *= 3.0;
