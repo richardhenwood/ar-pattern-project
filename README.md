@@ -20,6 +20,10 @@ transfer markings onto fabric. I do not have a large format printer.
 
 ## Calibration
 
+A screenshot of the calibration pattern
+![25548188431456720](https://github.com/user-attachments/assets/e40b17a8-6e60-49fb-abdf-c265ccbda9fe)
+
+
 The left thumbstick will translate the patten plane. The right thumbstick will
 rotate the pattern plane using left and right. Up and down on the right
 thumbstick will translate the pattern plane in the vertical direction. The
