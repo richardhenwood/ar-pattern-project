@@ -72,19 +72,19 @@
 
         AFRAME.registerComponent('left-thumbstick-logging', {
             init: function () {
-                this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
+                this.el.addEventListener('thumbstickmoved', this.onLeftThumbStickMoved.bind(this));
             },
-            onThumbStickMoved: function (evt) {
-                const fudge = 0.03;
+            onLeftThumbStickMoved: function (evt) {
+                const fudge = 0.01;
                 const x = evt.detail.x;
                 const y = evt.detail.y;
                 if (Math.abs(x) > 0.20 || Math.abs(y) > 0.20) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('position');
                     svgplane.setAttribute('position', {
-                        x: currentRotation.x += x * fudge,
+                        x: currentRotation.x += (x * fudge) ** 2, // larger movements accelerate transform
                         y: currentRotation.y,
-                        z: currentRotation.z += y * fudge
+                        z: currentRotation.z += (y * fudge) ** 2
                     });
                 }
             }
@@ -92,14 +92,14 @@
 
         AFRAME.registerComponent('right-thumbstick-logging', {
             init: function () {
-                this.el.addEventListener('thumbstickmoved', this.onThumbStickMoved.bind(this));
+                this.el.addEventListener('thumbstickmoved', this.onRightThumbStickMoved.bind(this));
             },
-            onThumbStickMoved: function (evt) {
+            onRightThumbStickMoved: function (evt) {
                 const xfudge = 3.0;
-                const yfudge = 0.01;
+                const yfudge = 0.005;
                 const x = evt.detail.x;
                 const y = evt.detail.y;
-                if (Math.abs(x) > 0.2) { 
+                if (Math.abs(x) > 0.3) { 
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('rotation');
                     svgplane.setAttribute('rotation', {
@@ -108,16 +108,16 @@
                         z: currentRotation.z
                     });
                 }
-                else if (Math.abs(y) > 0.20) { 
-                    if (Math.abs(y) > 0.80) { 
+                else if (Math.abs(y) > 0.3) { 
+                    if (Math.abs(y) > 0.9) { 
                         // accelerate extreme movemet
-                        yfudge *= 3.0;
+                        yfudge *= 0.1;
                     }
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('position');
                     svgplane.setAttribute('position', {
                         x: currentRotation.x,
-                        y: currentRotation.y += y * yfudge,
+                        y: currentRotation.y += (y * yfudge) ** 2,
                         z: currentRotation.z
                     });
                 }
