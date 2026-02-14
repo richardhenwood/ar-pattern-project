@@ -40,3 +40,4 @@ pattern that you transferred onto the fabric is correctly calibrated.
 
  + Use some tools to convert the large SVG into multiple A4 pages for printing. Print them and then tape them together.
  + Use a projector to project the pattern onto fabric. This requires calibration of the projector.
+ + Use a flatbed laser cutter.
