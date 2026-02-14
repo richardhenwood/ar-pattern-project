@@ -82,9 +82,9 @@
                     let svgplane = document.querySelector('#svgplane');
                     let currentRotation = svgplane.getAttribute('position');
                     svgplane.setAttribute('position', {
-                        x: currentRotation.x += (x * fudge) ** 4, // larger movements accelerate transform
+                        x: currentRotation.x += (x * fudge) ** 1/2, // larger movements accelerate transform
                         y: currentRotation.y,
-                        z: currentRotation.z += (y * fudge) ** 4
+                        z: currentRotation.z += (y * fudge) ** 1/2
                     });
                 }
             }
@@ -104,7 +104,7 @@
                     let currentRotation = svgplane.getAttribute('rotation');
                     svgplane.setAttribute('rotation', {
                         x: currentRotation.x,
-                        y: currentRotation.y -= (x * xfudge) ** 2,
+                        y: currentRotation.y -= (x * xfudge) ** 1/2,
                         z: currentRotation.z
                     });
                 }
@@ -117,7 +117,7 @@
                     let currentRotation = svgplane.getAttribute('position');
                     svgplane.setAttribute('position', {
                         x: currentRotation.x,
-                        y: currentRotation.y += (y * yfudge) ** 4,
+                        y: currentRotation.y += (y * yfudge) ** 1/2,
                         z: currentRotation.z
                     });
                 }
