@@ -18,6 +18,9 @@ transfer markings onto fabric. I do not have a large format printer.
 6. Mark the pattern onto the material with chalk.
 7. Cut out the pattern and sew it up.
 
+Post processing Seamly2d looks like this for me:
+<img width="1488" height="953" alt="image" src="https://github.com/user-attachments/assets/23d8d712-ae00-4b84-9500-1163dc90f7de" />
+
 ## Calibration
 
 A screenshot of the calibration pattern
