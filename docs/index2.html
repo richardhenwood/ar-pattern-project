@@ -1,0 +1,199 @@
+<html>
+  <head>
+    <title>AR Pattern Project</title>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script>
+        delete AFRAME.components["grabbable"];
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.x/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.6/dist/super-hands.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+  </head>
+  <body>
+
+    <a-scene
+        id="ascene"
+        webxr="optionalFeatures: hit-test, bounded-floor; overlayElement: #overlay;"
+        xr-mode-ui="XRMode: ar;" 
+        background="color: #ECECEC"
+        physics="debug: true" 
+        obb-collider="showColliders: true">
+
+        <a-entity meta-touch-controls="hand: left" left-thumbstick-logging></a-entity>
+        <a-entity meta-touch-controls="hand: right" right-thumbstick-logging></a-entity>
+
+        <a-assets>
+            <img id="reference" src="reference_lengths.svg">
+            <img id="patternplane" crossorigin="anonymous">
+        </a-assets>
+        
+        <a-plane svgplane id="svgplane" 
+                default="#reference" 
+                src="#reference" 
+                class='grabbable' 
+                rotation="0 0 0"
+                position="0 1 -1'"
+                material="side: double; transparent: true;"
+                static-body ></a-plane>
+
+        <a-camera>
+            <a-cursor raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-cursor>
+        </a-camera>
+        
+    </a-scene>
+
+    <script>
+        AFRAME.registerComponent('svgplane', {
+            schema: {
+                svgfile: {type: 'string'},
+                width: {type: 'number', default: 1},
+                height: {type: 'number', default: 1},
+                px2m: {type: 'number', default: 0.0002645833} // convert pixel to meters
+            },
+            init: function () { },
+            update: function () {
+                svgfile = this.el.getAttribute('default')
+                if (this.data.svgfile) { // we have a new svgfile, so make a new asset
+                    svgfile = this.data.svgfile
+                    this.el.setAttribute('src', svgfile);
+                }
+                const svgdom = document.querySelector(svgfile);
+                getSvgDimensions(svgdom.src).then(({width, height}) => {
+                    this.el.setAttribute('width', width);
+                    this.el.setAttribute('height', height);
+                });
+            }
+        });
+
+        AFRAME.registerComponent('left-thumbstick-logging', {
+            init: function () {
+                this.el.addEventListener('thumbstickmoved', this.onLeftThumbStickMoved.bind(this));
+            },
+            onLeftThumbStickMoved: function (evt) {
+                const fudge = 0.007;
+                const x = evt.detail.x;
+                const y = evt.detail.y;
+                if (Math.abs(x) > 0.10 || Math.abs(y) > 0.10) { 
+                    let svgplane = document.querySelector('#svgplane');
+                    let currentRotation = svgplane.getAttribute('position');
+                    svgplane.setAttribute('position', {
+                        x: currentRotation.x += (x * fudge) ** 1/2, // larger movements accelerate transform
+                        y: currentRotation.y,
+                        z: currentRotation.z += (y * fudge) ** 1/2
+                    });
+                }
+            }
+        });
+
+        AFRAME.registerComponent('right-thumbstick-logging', {
+            init: function () {
+                this.el.addEventListener('thumbstickmoved', this.onRightThumbStickMoved.bind(this));
+            },
+            onRightThumbStickMoved: function (evt) {
+                const xfudge = 0.1;
+                const yfudge = 0.005;
+                const x = evt.detail.x;
+                const y = evt.detail.y;
+                if (Math.abs(x) > 0.3) { 
+                    let svgplane = document.querySelector('#svgplane');
+                    let currentRotation = svgplane.getAttribute('rotation');
+                    svgplane.setAttribute('rotation', {
+                        x: currentRotation.x,
+                        y: currentRotation.y -= (x * xfudge) ** 1/2,
+                        z: currentRotation.z
+                    });
+                }
+                else if (Math.abs(y) > 0.3) { 
+                    if (Math.abs(y) > 0.9) { 
+                        // accelerate extreme movemet
+                        yfudge *= 0.1;
+                    }
+                    let svgplane = document.querySelector('#svgplane');
+                    let currentRotation = svgplane.getAttribute('position');
+                    svgplane.setAttribute('position', {
+                        x: currentRotation.x,
+                        y: currentRotation.y += (y * yfudge) ** 1/2,
+                        z: currentRotation.z
+                    });
+                }
+            }
+        });
+
+        async function getSvgDimensions(svgUrl) {
+            try {
+                const response = await fetch(svgUrl);
+                const svgString = await response.text();
+
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+
+                // Try to get width from 'width' attribute
+                let width = svgElement.getAttribute('width');
+                let height = svgElement.getAttribute('height');
+
+                // If width attribute is missing, check viewBox
+                if (!width) {
+                    const viewBox = svgElement.getAttribute('viewBox');
+                    if (viewBox) {
+                        const parts = viewBox.split(' ');
+                        // The third value in the viewBox is the width
+                        width = parts[2];
+                    }
+                }
+
+                console.log('Parsed SVG width, height:', width, height);
+                if (checkLastTwo(width, 'mm') && checkLastTwo(height, 'mm')){
+                    width = parseFloat(width.slice(0, -2)) / 1000;
+                    height = parseFloat(height.slice(0, -2)) / 1000;
+
+                    return {width: width, height: height};
+                }
+                alert("svg file does not have mm measurements in width or height")
+
+            } catch (error) {
+                console.error('Error fetching or parsing SVG:', error);
+                return null;
+            }
+
+            function checkLastTwo(str, expected) {
+                // Check if the string has at least two characters before slicing
+                if (str.length >= 2) {
+                    return str.slice(-2) === expected;
+                }
+                return false; // Return false for strings shorter than 2 characters
+            }
+        }
+    </script>
+
+    <div id="overlay">
+        <div id='url-zone'>Provide a URL to your SVG
+            <input type="text" id="url-input" placeholder="Enter file URL here" />
+            <button id="submit-url">Submit URL</button>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('url-input');
+        const submitUrlBtn = document.getElementById('submit-url');
+
+        submitUrlBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (url) {
+                const assets = document.querySelector('a-assets');
+                const asset = document.querySelector('#patternplane');
+                asset.setAttribute('src', url);
+                const entity = document.querySelector('#svgplane');
+                entity.setAttribute('svgplane', {svgfile: "#patternplane"});
+                console.log("set new svg");
+            }
+        });
+    </script>
+
+  </body>
+</html>
