@@ -27,9 +27,9 @@
         <a-entity meta-touch-controls="hand: left" left-thumbstick-logging></a-entity>
         <a-entity meta-touch-controls="hand: right" right-thumbstick-logging></a-entity>
 
-        <a-assets>
+        <a-assets id="my-assets">
             <img id="reference" src="reference_lengths.svg">
-            <img id="patternplane" crossorigin="anonymous">
+            <img id="loadedsvg" crossorigin="anonymous">
         </a-assets>
         
         <a-plane svgplane id="svgplane" 
@@ -37,7 +37,7 @@
                 src="#reference" 
                 class='grabbable' 
                 rotation="-90 0 0"
-                position="0 0 -1'"
+                position="0 0 -1"
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
@@ -57,16 +57,26 @@
             },
             init: function () { },
             update: function () {
-                svgfile = this.el.getAttribute('default')
-                if (this.data.svgfile) { // we have a new svgfile, so make a new asset
-                    svgfile = this.data.svgfile
-                    this.el.setAttribute('src', svgfile);
+               const newsvg = document.querySelector('#loadedsvg');
+                if (newsvg.src != "") {
+                    const svgdom = document.querySelector('#svgplane');
+                    getSvgDimensions(newsvg.src).then(({width, height}) => {
+                        this.el.setAttribute('width', width);
+                        this.el.setAttribute('height', height);
+                        this.el.setAttribute('src', "#loadedsvg");
+                    });
+                    console.log('here');
                 }
-                const svgdom = document.querySelector(svgfile);
-                getSvgDimensions(svgdom.src).then(({width, height}) => {
-                    this.el.setAttribute('width', width);
-                    this.el.setAttribute('height', height);
-                });
+            },
+            applyTexture: function (img) {
+                let mesh = this.el.getObject3D('mesh');
+                if (!mesh) return;
+
+                // Create the texture cleanly once the source is ready
+                let texture = new THREE.Texture(img);
+                mesh.material.map = texture;
+                texture.needsUpdate = true; // Safe to call now
+                console.log('loaded applytextur')
             }
         });
 
@@ -174,26 +184,28 @@
     <div id="overlay">
         <div id='url-zone'>Provide a URL to your SVG
             <input type="text" id="url-input" placeholder="Enter file URL here" />
-            <button id="submit-url">Submit URL</button>
+            <button id="submit-url" onclick="updateAframeAsset()">Submit URL</button>
         </div>
     </div>
 
     <script>
         const urlInput = document.getElementById('url-input');
         const submitUrlBtn = document.getElementById('submit-url');
-
-        submitUrlBtn.addEventListener('click', () => {
-            const url = urlInput.value.trim();
+        
+        function updateSvgPlane() {
+            const svgPlane = document.querySelector('#svgplane');
+            svgPlane.setAttribute('svgplane', {svgfile: "#loadedsvg"});
+        }
+        
+        function updateAframeAsset() {
+            const url = document.querySelector(' #url-input').value;
             if (url) {
-                const assets = document.querySelector('a-assets');
-                const asset = document.querySelector('#patternplane');
-                asset.setAttribute('src', url);
-                const entity = document.querySelector('#svgplane');
-                entity.setAttribute('svgplane', {svgfile: "#patternplane"});
-                console.log("set new svg");
+                console.log('got new svg to load', url)
+                const newSvgAsset = document.querySelector('#loadedsvg');
+                newSvgAsset.onload = updateSvgPlane;
+                newSvgAsset.src = url;
             }
-        });
+        }
     </script>
-
   </body>
 </html>
