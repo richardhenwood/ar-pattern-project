@@ -36,8 +36,8 @@
                 default="#reference" 
                 src="#reference" 
                 class='grabbable' 
-                rotation="-90 0 0"
-                position="0 0 -1"
+                rotation="0 0 0"
+                position="0 2 -2"
                 material="side: double; transparent: true;"
                 static-body ></a-plane>
 
@@ -60,12 +60,16 @@
                const newsvg = document.querySelector('#loadedsvg');
                 if (newsvg.src != "") {
                     const svgdom = document.querySelector('#svgplane');
-                    getSvgDimensions(newsvg.src).then(({width, height}) => {
-                        this.el.setAttribute('width', width);
-                        this.el.setAttribute('height', height);
-                        this.el.setAttribute('src', "#loadedsvg");
-                    });
-                    console.log('here');
+                    try {
+                        const vals = getSvgDimensions(newsvg.src);
+                        vals.then(([w, h]) => {
+                            this.el.setAttribute('width', w);
+                            this.el.setAttribute('height', h);
+                            this.el.setAttribute('src', "#loadedsvg");
+                        });
+                    } catch (error) {
+                        console.error('failed fetching or parsing SVG:', error);
+                    }
                 }
             },
             applyTexture: function (img) {
@@ -134,9 +138,19 @@
             }
         });
 
+        function checkLastTwo(str, expected) {
+            // Check if the string has at least two characters before slicing
+            if (str.length >= 2) {
+                return str.slice(-2) === expected;
+            }
+            return false; // Return false for strings shorter than 2 characters
+        }
         async function getSvgDimensions(svgUrl) {
             try {
                 const response = await fetch(svgUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
                 const svgString = await response.text();
 
                 const parser = new DOMParser();
@@ -162,7 +176,7 @@
                     width = parseFloat(width.slice(0, -2)) / 1000;
                     height = parseFloat(height.slice(0, -2)) / 1000;
 
-                    return {width: width, height: height};
+                    return [width, height];
                 }
                 alert("svg file does not have mm measurements in width or height")
 
@@ -170,18 +184,56 @@
                 console.error('Error fetching or parsing SVG:', error);
                 return null;
             }
+        }
+        async function ____getSvgDimensions(svgUrl) {
+            await fetch(svgUrl).then(response => {
+                const svgString = response.text();
 
-            function checkLastTwo(str, expected) {
-                // Check if the string has at least two characters before slicing
-                if (str.length >= 2) {
-                    return str.slice(-2) === expected;
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+
+                // Try to get width from 'width' attribute
+                let width = svgElement.getAttribute('width');
+                let height = svgElement.getAttribute('height');
+
+                // If width attribute is missing, check viewBox
+                if (!width) {
+                    const viewBox = svgElement.getAttribute('viewBox');
+                    if (viewBox) {
+                        const parts = viewBox.split(' ');
+                        // The third value in the viewBox is the width
+                        width = parts[2];
+                    }
                 }
-                return false; // Return false for strings shorter than 2 characters
-            }
+
+                console.log('Parsed SVG width, height:', width, height);
+                if (checkLastTwo(width, 'mm') && checkLastTwo(height, 'mm')){
+                    width = parseFloat(width.slice(0, -2)) / 1000;
+                    height = parseFloat(height.slice(0, -2)) / 1000;
+
+                    return [width, height];
+                }
+                alert("svg file does not have mm measurements in width or height")
+                return [null, null]
+            })
+            .catch(error => {
+                // CORS blocks trigger this catch block
+                console.error("Request failed:", error);
+
+                // Fallback message to show your user
+                alert("Unable to connect to the server. This may be due to a network issue or an unauthorized origin (CORS).");
+            });
         }
     </script>
 
     <div id="overlay">
+        <div id='orientation-selector'>Orientation
+            <input type="radio" id="orien-h" name="tech" value="horizontal" onchange="orientationChange(this)" checked />
+            <label for="html">Horizontal</label>
+            <input type="radio" id="orien-v" name="tech" value="vertical" onchange="orientationChange(this)" />
+            <label for="html">Vertial</label>
+        </div>
         <div id='url-zone'>Provide a URL to your SVG
             <input type="text" id="url-input" placeholder="Enter file URL here" />
             <button id="submit-url" onclick="updateAframeAsset()">Submit URL</button>
@@ -191,6 +243,22 @@
     <script>
         const urlInput = document.getElementById('url-input');
         const submitUrlBtn = document.getElementById('submit-url');
+        
+        function orientationChange(radioButton) {
+            console.log("Orientation switched to: " + radioButton.value);
+            if (radioButton.value === 'horizontal') {
+                const svgPlane = document.querySelector('#svgplane');
+                svgPlane.setAttribute('rotation', {x: -90, y: 0, z: 0});
+                svgPlane.setAttribute('position', {x: 0, y: 0, z: -1});
+            }
+            else {
+                const svgPlane = document.querySelector('#svgplane');
+                svgPlane.setAttribute('rotation', {x: 0, y: 0, z: 0});
+                svgPlane.setAttribute('position', {x: 0, y: 2, z: -2});
+                
+            }
+
+        }
         
         function updateSvgPlane() {
             const svgPlane = document.querySelector('#svgplane');
@@ -203,6 +271,12 @@
                 console.log('got new svg to load', url)
                 const newSvgAsset = document.querySelector('#loadedsvg');
                 newSvgAsset.onload = updateSvgPlane;
+                newSvgAsset.onerror = (event) => {
+                // If the server lacks 'Access-Control-Allow-Origin: *', this fires.
+                // Note: The event object still won't explicitly say "CORS", 
+                // but it safely prevents a tainted canvas state.
+                    alert("Loading failed. Possible CORS block?");
+                };
                 newSvgAsset.src = url;
             }
         }
